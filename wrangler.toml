@@ -29,12 +29,14 @@ id = "358fb115d2284bfcbe49d8b2d032b83b"
 # Telegram TG-канал @aisystant_status (создан 25 апр 2026, id=-1003907065350)
 TG_STATUS_CHANNEL = "@aisystant_status"
 
-# Telegram chat ID команды для критических алертов в DM
-# 74892489 = Tseren (из activity-hub/.env ALERT_CHAT_ID)
-TG_TEAM_CHAT_IDS = "74892489"
+# Telegram chat IDs команды для критических алертов в DM
+# Пустой = только канал (нет дублирования для одиночного владельца).
+# Когда команда ≥3 человек — добавить здесь chat_ids через запятую "12345,67890"
+TG_TEAM_CHAT_IDS = ""
 
 # Режим работы: channel_only / team_only / both / off
-MODE = "both"
+# channel_only пока команда = 1 чел (избегаем дублирования каналу+DM)
+MODE = "channel_only"
 
 # Минимальный severity для попадания в TG-канал (medium = не бесит подписчиков на low)
 MIN_SEVERITY_FOR_CHANNEL = "medium"

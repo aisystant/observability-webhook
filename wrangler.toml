@@ -1,0 +1,47 @@
+# WP-244 Ф4 — Observability Webhook (DP.SC.124, DP.ROLE.035)
+# see PACK-digital-platform/.../08-service-clauses/DP.SC.124-user-facing-platform-health.md
+# see PACK-digital-platform/.../02-domain-entities/DP.ROLE.035-platform-observer.md
+#
+# Принимает webhook от Better Stack на incident lifecycle (start/update/resolve)
+# → форматирует → постит в TG-канал и/или DM команде через Bot API напрямую
+# (НЕ через aist-bot Python процесс — observability должна работать ДАЖЕ если бот лежит).
+
+name = "observability-webhook"
+main = "src/index.ts"
+compatibility_date = "2025-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Production route — настроится при готовности custom domain
+# routes = [{ pattern = "obs-webhook.aisystant.com", custom_domain = true }]
+
+# Cron Trigger — pull-режим для Better Stack incidents
+# (free tier Better Stack не даёт outgoing webhooks → используем polling)
+# Минимальный интервал CF Cron = 1 минута
+[triggers]
+crons = ["* * * * *"]  # каждую минуту
+
+# KV для last_seen incident_id (state между cron runs)
+[[kv_namespaces]]
+binding = "OBSERVABILITY_STATE"
+id = "358fb115d2284bfcbe49d8b2d032b83b"
+
+[vars]
+# Telegram TG-канал @aisystant_status (создан 25 апр 2026, id=-1003907065350)
+TG_STATUS_CHANNEL = "@aisystant_status"
+
+# Telegram chat ID команды для критических алертов в DM
+# 74892489 = Tseren (из activity-hub/.env ALERT_CHAT_ID)
+TG_TEAM_CHAT_IDS = "74892489"
+
+# Режим работы: channel_only / team_only / both / off
+MODE = "both"
+
+# Минимальный severity для попадания в TG-канал (medium = не бесит подписчиков на low)
+MIN_SEVERITY_FOR_CHANNEL = "medium"
+
+# Минимальный severity для DM команде (low = команде нужны все алерты)
+MIN_SEVERITY_FOR_TEAM = "low"
+
+# [secrets, set via `wrangler secret put`]
+# TG_BOT_TOKEN — токен @aist_me_bot для api.telegram.org вызовов
+# WEBHOOK_HMAC_SECRET — HMAC от Better Stack для верификации webhook

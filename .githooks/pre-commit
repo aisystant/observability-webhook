@@ -1,0 +1,54 @@
+#!/bin/bash
+# Pre-commit hook: блокирует случайный коммит секретов.
+#
+# Покрывает:
+#   - Better Stack API token: ust_<≥20 alnum>
+#   - Telegram bot token:     <8-10 digits>:<35 alnum/_/->
+#   - Hex secret (≥32) присвоенный в *_SECRET / *_HMAC / *_TOKEN / *_API_KEY
+#
+# Активация: git config core.hooksPath .githooks
+# Bypass:    git commit --no-verify  (только осознанно)
+
+staged_diff=$(git diff --cached --diff-filter=ACM)
+if [ -z "$staged_diff" ]; then
+    exit 0
+fi
+
+# Только добавленные строки (не diff-headers)
+added_lines=$(echo "$staged_diff" | grep -E '^\+' | grep -vE '^\+\+\+ ')
+
+violations=""
+
+check_pattern() {
+    local label="$1"
+    local pattern="$2"
+    local hits
+    hits=$(echo "$added_lines" | grep -nE "$pattern" || true)
+    if [ -n "$hits" ]; then
+        violations="${violations}
+[$label]
+$hits
+"
+    fi
+}
+
+# ust_ + 20+ alnum (Better Stack)
+check_pattern "Better Stack API token" 'ust_[A-Za-z0-9]{20,}'
+
+# Telegram bot token: 8-10 digits : 35 alnum/_/-
+check_pattern "Telegram bot token" '[0-9]{8,10}:[A-Za-z0-9_-]{35}'
+
+# Hex secret ≥32 chars assigned to *_SECRET / *_HMAC / *_TOKEN / *_API_KEY
+check_pattern "Hex secret в env-присваивании" '(_SECRET|_HMAC|_TOKEN|_API_KEY)[[:space:]]*=[[:space:]]*"?[a-f0-9]{32,}'
+
+if [ -n "$violations" ]; then
+    echo ""
+    echo "🚫 Pre-commit BLOCKED: возможный секрет в staged изменениях."
+    echo "$violations"
+    echo "Если это плейсхолдер/тест — отрегулируй паттерн в .githooks/pre-commit"
+    echo "или (осознанно): git commit --no-verify"
+    echo ""
+    exit 1
+fi
+
+exit 0

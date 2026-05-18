@@ -2,7 +2,7 @@
 
 Cloudflare Worker — receiver для Better Stack incident webhook → постит уведомления в TG-канал и/или DM команде.
 
-**Назначение:** реализация DP.ROLE.035 Platform Observer implementation E (см. [DP.ROLE.035](../../PACK-digital-platform/pack/digital-platform/02-domain-entities/DP.ROLE.035-platform-observer.md) и [DP.SC.124 User-Facing Platform Health](../../PACK-digital-platform/pack/digital-platform/08-service-clauses/DP.SC.124-user-facing-platform-health.md)).
+**Назначение:** реализация DP.ROLE.035 Platform Observer implementation E (см. [DP.ROLE.035](../../PACK-digital-platform/pack/digital-platform/02-domain-entities/DP.ROLE.035-platform-observer.md) и [DP.SC.124 User-Facing Platform Health](../../PACK-digital-platform/pack/digital-platform/08-service-clauses/DP.SC.144-user-facing-platform-health.md)).
 
 **Тип репозитория:** DS/instrument (CF Worker, аналог event-gateway).
 
@@ -171,7 +171,7 @@ npm run deploy
 
 ## Связи
 
-- **Обещание:** [DP.SC.124 User-Facing Platform Health](../../PACK-digital-platform/pack/digital-platform/08-service-clauses/DP.SC.124-user-facing-platform-health.md)
+- **Обещание:** [DP.SC.124 User-Facing Platform Health](../../PACK-digital-platform/pack/digital-platform/08-service-clauses/DP.SC.144-user-facing-platform-health.md)
 - **Роль:** [DP.ROLE.035 Platform Observer](../../PACK-digital-platform/pack/digital-platform/02-domain-entities/DP.ROLE.035-platform-observer.md) implementation E
 - **Родительский РП:** [WP-244](../../DS-my-strategy/inbox/WP-244-platform-observability.md) Ф4
 - **Соседние Workers** (для контекста): event-gateway (DP.ROLE.032), gateway-mcp, knowledge-mcp, digital-twin-mcp, personal-knowledge-mcp.
